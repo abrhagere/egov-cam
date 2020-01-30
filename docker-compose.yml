@@ -1,0 +1,47 @@
+version: '3'
+services:
+ # The Application
+  egov-cam-app:
+    image: 196.190.41.213:5000/egov/egov-cam
+    working_dir: /var/www
+    container_name: egov-cam-app
+    volumes:
+      - /var/www/storage
+    env_file: '.env'
+    environment:
+      - "DB_HOST=egov-cam-db"
+    networks:
+      - app-network 
+    restart: always
+    tty: true
+#The Web Server
+  egov-cam-web:
+    image: 196.190.41.213:5000/egov/egov-cam-web
+    ports:
+      - 9202:80
+      - 9203:443
+    container_name: egov-cam-web
+    networks:
+      - app-network 
+    restart: always
+    tty: true
+#The Database
+  egov-cam-db:
+    image: mariadb:latest
+    container_name: egov-cam-db
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      - "MYSQL_DATABASE=crm_case_manager"
+      - "MYSQL_USER=root"
+      - "MYSQL_PASSWORD="
+      - "MYSQL_ROOT_PASSWORD=root"
+    networks:
+      - app-network 
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+#Docker Volumes
+volumes:
+  dbdata:
